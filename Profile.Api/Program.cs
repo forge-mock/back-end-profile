@@ -1,4 +1,7 @@
 using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using Profile.Api.Extensions;
+using Profile.Persistence.Context;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -15,9 +18,10 @@ builder.Services.AddCors(options =>
                 .WithMethods("GET", "POST", "PUT", "DELETE")
                 .WithHeaders("Content-Type");
         }));
-// builder.Services.AddDbContext<AuthContext>(options =>
-//     options.UseNpgsql(Environment.GetEnvironmentVariable("USER_IDENTITY_DB_CONNECTION_STRING")));
+builder.Services.AddDbContext<UserContext>(options =>
+    options.UseNpgsql(Environment.GetEnvironmentVariable("USER_IDENTITY_DB_CONNECTION_STRING")));
 builder.Services.AddControllers();
+builder.Services.AddRepositories();
 
 WebApplication app = builder.Build();
 
