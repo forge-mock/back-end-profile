@@ -12,7 +12,7 @@ Install the necessary tools:
 3. Create the .env file in the root folder and add environment variable:
 
 ```
-JWT_SECRET=random_secret
+USER_IDENTITY_DB_CONNECTION_STRING=Host=database_ip;Port=5432;Database=user_identity;Username=username;Password=password;
 ```
 
 ## Important notes
