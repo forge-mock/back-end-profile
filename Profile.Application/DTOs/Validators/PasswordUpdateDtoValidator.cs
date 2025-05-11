@@ -7,6 +7,7 @@ internal sealed class PasswordUpdateDtoValidator : AbstractValidator<PasswordUpd
 {
     internal PasswordUpdateDtoValidator()
     {
+        LoginValidator.AddEmailRules(RuleFor(x => x.UserEmail));
         LoginValidator.AddPasswordRules(RuleFor(x => x.OldPassword));
         LoginValidator.AddPasswordRules(RuleFor(x => x.NewPassword));
     }

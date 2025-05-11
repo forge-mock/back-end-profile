@@ -9,16 +9,17 @@ namespace Profile.Persistence.Repositories;
 
 public sealed class UserRepository(UserContext context) : IUserRepository
 {
-    public async Task<Result<User>> GetUserWithProvider(string userEmail)
+    public async Task<Result<User?>> GetUserWithProvider(string userEmail)
     {
         try
         {
             User? user = await context.Users
+                .AsNoTracking()
                 .Include(u => u.UserOauthProviders)
                 .ThenInclude(p => p.Provider)
                 .FirstOrDefaultAsync(u => u.UserEmail == userEmail);
 
-            return user == null ? Result.Fail("User does not exist") : Result.Ok(user);
+            return Result.Ok(user);
         }
         catch
         {
@@ -26,12 +27,31 @@ public sealed class UserRepository(UserContext context) : IUserRepository
         }    
     }
 
-    public async Task<Result<User>> UpdateUser(User user)
+    public async Task<Result<User>> UpdateUserInformation(User user, string username, string userEmail)
     {
         try
         {
-            context.Users.Update(user);
+            context.Attach(user);
+            user.Username = username;
+            user.UserEmail = userEmail;
             await context.SaveChangesAsync();
+            context.Entry(user).State = EntityState.Detached;
+            return Result.Ok(user);
+        }
+        catch
+        {
+            return Result.Fail(ErrorMessage.Exception);
+        }    
+    }
+
+    public async Task<Result<User>> UpdateUserPassword(User user, string password)
+    {
+        try
+        {
+            context.Attach(user);
+            user.Password = password;
+            await context.SaveChangesAsync();
+            context.Entry(user).State = EntityState.Detached;
             return Result.Ok(user);
         }
         catch

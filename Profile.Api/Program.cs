@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("https://localhost:4001")
                 .WithMethods("GET", "POST", "PUT", "DELETE")
-                .WithHeaders("Content-Type");
+                .WithHeaders("Bearer", "Content-Type");
         }));
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("USER_IDENTITY_DB_CONNECTION_STRING")));
