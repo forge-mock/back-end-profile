@@ -12,6 +12,27 @@ namespace Profile.Application.Services;
 
 public sealed class UserService(IUserRepository userRepository) : IUserService
 {
+    public async Task<Result<List<string>>> GetUserProviders(string userEmail)
+    {
+        try
+        {
+            Result<User?> result = await userRepository.GetUserWithProvider(userEmail);
+            
+            if (result.Value == null)
+            {
+                return Result.Fail("User does not exist");
+            }
+
+            List<string> providers = result.Value.UserOauthProviders.Select(p => p.Provider.Name).ToList();
+            
+            return Result.Ok(providers);
+        }
+        catch
+        {
+            return Result.Fail(ErrorMessage.Exception);
+        }        
+    }
+
     public async Task<Result<bool>> UpdateUserInformation(UserUpdateDto userUpdate)
     {
         try
