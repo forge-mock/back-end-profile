@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("USER_IDENTITY_DB_CONNECTION_STRING")));
 builder.Services.AddControllers();
+builder.Services.AddServices();
 builder.Services.AddRepositories();
 
 WebApplication app = builder.Build();
