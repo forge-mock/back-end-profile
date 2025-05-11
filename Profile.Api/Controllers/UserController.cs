@@ -24,7 +24,7 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
             return BadRequest(new ResultFailDto(false, result.Errors));
         }
 
-        return Ok(new ResultSuccessDto<List<string>>(false, result.Value));
+        return Ok(new ResultSuccessDto<List<string>>(true, result.Value));
     }
 
     [HttpPut("information")]
