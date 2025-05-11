@@ -17,10 +17,7 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
     [HttpGet("providers")]
     public async Task<IActionResult> Providers()
     {
-        string authHeader = Request.Headers.Authorization.FirstOrDefault() ?? string.Empty;
-        TokenInformation tokenInformation = tokenParser.ParseToken(authHeader);
-
-        Result<List<string>> result = await userService.GetUserProviders(tokenInformation.UserEmail);
+        Result<List<string>> result = await userService.GetUserProviders(GetUserEmail());
 
         if (result.IsFailed)
         {
@@ -33,10 +30,7 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
     [HttpPut("information")]
     public async Task<IActionResult> Information([FromBody] UserUpdateDto userUpdate)
     {
-        string authHeader = Request.Headers.Authorization.FirstOrDefault() ?? string.Empty;
-        TokenInformation tokenInformation = tokenParser.ParseToken(authHeader);
-
-        userUpdate.OldUserEmail = tokenInformation.UserEmail;
+        userUpdate.OldUserEmail = GetUserEmail();
 
         Result<bool> result = await userService.UpdateUserInformation(userUpdate);
 
@@ -49,8 +43,10 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
     }
 
     [HttpPut("password")]
-    public async Task<IActionResult> Information([FromBody] PasswordUpdateDto passwordUpdate)
+    public async Task<IActionResult> Password([FromBody] PasswordUpdateDto passwordUpdate)
     {
+        passwordUpdate.UserEmail = GetUserEmail();
+
         Result<bool> result = await userService.UpdateUserPassword(passwordUpdate);
 
         if (result.IsFailed)
@@ -59,5 +55,12 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
         }
 
         return Ok(new ResultSuccessDto<bool>(result.IsSuccess, result.Value));
+    }
+
+    private string GetUserEmail()
+    {
+        string authHeader = Request.Headers.Authorization.FirstOrDefault() ?? string.Empty;
+        TokenInformation tokenInformation = tokenParser.ParseToken(authHeader);
+        return tokenInformation.UserEmail;
     }
 }

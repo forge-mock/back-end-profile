@@ -96,10 +96,10 @@ public sealed class UserService(IPasswordHasher passwordHasher, IUserRepository 
 
             if (!isPasswordValid)
             {
-                Result.Fail("Old password is incorrect");
+                return Result.Fail("Old password is incorrect");
             }
 
-            await userRepository.UpdateUserPassword(result.Value, passwordUpdate.NewPassword);
+            await userRepository.UpdateUserPassword(result.Value, passwordHasher.Hash(passwordUpdate.NewPassword));
 
             return Result.Ok();
         }
