@@ -1,12 +1,12 @@
 using FluentResults;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Identity;
 using Profile.Application.DTOs;
 using Profile.Application.DTOs.Validators;
 using Profile.Application.Interfaces;
 using Profile.Domain.Repositories;
 using Shared.Constants;
 using Shared.Models;
+using Shared.Services;
 
 namespace Profile.Application.Services;
 
