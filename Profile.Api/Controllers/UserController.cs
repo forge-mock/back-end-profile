@@ -1,22 +1,35 @@
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Profile.Application.Interfaces;
+using Shared.DTOs;
+using Shared.Interfaces;
 using Shared.Models;
 
 namespace Profile.Api.Controllers;
 
 [ApiController]
 [Route("api/user")]
-public class UserController(IUserService userService) : ControllerBase
+public class UserController(ITokenParser tokenParser, IUserService userService) : ControllerBase
 {
-    [HttpGet("information")]
-    public async Task<IActionResult> Information()
+    [HttpGet("providers")]
+    public async Task<IActionResult> Providers()
     {
-        if (payloadResult.IsFailed)
+        string? authHeader = Request.Headers.Authorization.FirstOrDefault();
+
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
         {
-            return BadRequest(new ResultFailDto(payloadResult.IsSuccess, payloadResult.Errors));
+            return BadRequest("Invalid token");
         }
 
-        return await BaseProvider(provider, Providers.Google);
+        TokenInformation tokenInformation = tokenParser.ParseToken(authHeader);
+
+        Result<List<string>> result = await userService.GetUserProviders(tokenInformation.UserEmail);
+
+        if (result.IsFailed)
+        {
+            return BadRequest(new ResultFailDto(false, result.Errors));
+        }
+
+        return Ok(new ResultSuccessDto<List<string>>(result.IsSuccess, result.Value));
     }
 }

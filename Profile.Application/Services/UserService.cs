@@ -5,12 +5,12 @@ using Profile.Application.DTOs.Validators;
 using Profile.Application.Interfaces;
 using Profile.Domain.Repositories;
 using Shared.Constants;
+using Shared.Interfaces;
 using Shared.Models;
-using Shared.Services;
 
 namespace Profile.Application.Services;
 
-public sealed class UserService(IUserRepository userRepository) : IUserService
+public sealed class UserService(IPasswordHasher passwordHasher, IUserRepository userRepository) : IUserService
 {
     public async Task<Result<List<string>>> GetUserProviders(string userEmail)
     {
@@ -83,7 +83,7 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
                 return Result.Fail("User does not exist");
             }
 
-            bool isPasswordValid = PasswordHasher.Verify(
+            bool isPasswordValid = passwordHasher.Verify(
                 passwordUpdate.OldPassword,
                 result.Value.Password ?? string.Empty);
 
