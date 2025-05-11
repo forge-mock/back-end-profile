@@ -17,20 +17,20 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
         try
         {
             Result<User?> result = await userRepository.GetUserWithProvider(userEmail);
-            
+
             if (result.Value == null)
             {
                 return Result.Fail("User does not exist");
             }
 
             List<string> providers = result.Value.UserOauthProviders.Select(p => p.Provider.Name).ToList();
-            
+
             return Result.Ok(providers);
         }
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }        
+        }
     }
 
     public async Task<Result<bool>> UpdateUserInformation(UserUpdateDto userUpdate)
@@ -47,20 +47,20 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
             }
 
             Result<User?> result = await userRepository.GetUserWithProvider(userUpdate.OldUserEmail);
-            
+
             if (result.Value == null)
             {
                 return Result.Fail("User does not exist");
             }
-            
+
             await userRepository.UpdateUserInformation(result.Value, userUpdate.Username, userUpdate.NewUserEmail);
-            
+
             return Result.Ok();
         }
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }    
+        }
     }
 
     public async Task<Result<bool>> UpdateUserPassword(PasswordUpdateDto passwordUpdate)
@@ -69,34 +69,36 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
         {
             PasswordUpdateDtoValidator validator = new();
             ValidationResult validationResult = await validator.ValidateAsync(passwordUpdate);
-    
+
             if (!validationResult.IsValid)
             {
                 List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 return Result.Fail(errors);
             }
-    
+
             Result<User?> result = await userRepository.GetUserWithProvider(passwordUpdate.UserEmail);
-            
+
             if (result.Value == null)
             {
                 return Result.Fail("User does not exist");
             }
-           
-            bool isPasswordValid = PasswordHasher.Verify(passwordUpdate.OldPassword, result.Value.Password ?? string.Empty);
-    
+
+            bool isPasswordValid = PasswordHasher.Verify(
+                passwordUpdate.OldPassword,
+                result.Value.Password ?? string.Empty);
+
             if (!isPasswordValid)
             {
                 Result.Fail("Old password is incorrect");
             }
-            
+
             await userRepository.UpdateUserPassword(result.Value, passwordUpdate.NewPassword);
-            
+
             return Result.Ok();
         }
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }      
+        }
     }
 }

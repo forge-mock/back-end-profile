@@ -24,7 +24,7 @@ public sealed class UserRepository(UserContext context) : IUserRepository
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }    
+        }
     }
 
     public async Task<Result<User>> UpdateUserInformation(User user, string username, string userEmail)
@@ -41,7 +41,7 @@ public sealed class UserRepository(UserContext context) : IUserRepository
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }    
+        }
     }
 
     public async Task<Result<User>> UpdateUserPassword(User user, string password)
@@ -57,6 +57,6 @@ public sealed class UserRepository(UserContext context) : IUserRepository
         catch
         {
             return Result.Fail(ErrorMessage.Exception);
-        }    
+        }
     }
 }
