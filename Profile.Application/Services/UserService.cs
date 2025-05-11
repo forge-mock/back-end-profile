@@ -46,6 +46,13 @@ public sealed class UserService(IPasswordHasher passwordHasher, IUserRepository 
                 return Result.Fail(errors);
             }
 
+            Result<bool> isUserExists = await userRepository.CheckIsUserExists(userUpdate.NewUserEmail);
+
+            if (isUserExists.Value)
+            {
+                return Result.Fail("User with that email already exists");
+            }
+
             Result<User?> result = await userRepository.GetUserWithProvider(userUpdate.OldUserEmail);
 
             if (result.Value == null)

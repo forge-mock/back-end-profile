@@ -27,6 +27,22 @@ public sealed class UserRepository(UserContext context) : IUserRepository
         }
     }
 
+    public async Task<Result<bool>> CheckIsUserExists(string userEmail)
+    {
+        try
+        {
+            bool userExists = await context.Users
+                .AsNoTracking()
+                .AnyAsync(u => u.UserEmail == userEmail);
+
+            return Result.Ok(userExists);
+        }
+        catch
+        {
+            return Result.Fail(ErrorMessage.Exception);
+        }
+    }
+
     public async Task<Result<User>> UpdateUserInformation(User user, string username, string userEmail)
     {
         try

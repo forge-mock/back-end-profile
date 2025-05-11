@@ -45,7 +45,7 @@ public class UserController(ITokenParser tokenParser, IUserService userService) 
             return BadRequest(new ResultFailDto(false, result.Errors));
         }
 
-        return Ok(new ResultSuccessDto<bool>(result.IsSuccess, result.Value));
+        return Ok(new ResultSuccessDto<bool>(true, true));
     }
 
     [HttpPut("password")]
